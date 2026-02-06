@@ -6,6 +6,13 @@ function write(text) {
   output.textContent += text + "\n";
 }
 
+function play(choice){
+  socket.send(JSON.stringify({
+    type: "choice",
+    choice
+  }));
+}
+
 socket.onmessage = (event) => {
   const data = JSON.parse(event.data);
 
@@ -18,4 +25,19 @@ socket.onmessage = (event) => {
     console.log("Opponent found! Game starting...");
     write("Opponent found! Game starting...");
   }
+
+if (data.type === "result") {
+  write(`You chose: ${data.p1Choice}`);
+  write(`Opponent chose: ${data.p2Choice}`);
+  write(`Score: You ${data.p1Score} - ${data.p2Score} Opponent`);
+
+  if (data.gameOver) {
+    write(`🏆 Winner: ${data.winner}`);
+  }
+}
+
+
+    if (data.type === "opponent_left") {
+    write("Opponent disconnected ");
+    }
 };
