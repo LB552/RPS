@@ -23,6 +23,7 @@ wss.on("connection", (ws) => {
   ws.choice = null;
   ws.opponent = null;
   ws.score = 0;
+//ws.opponent.score krävs ej för självet får alltid ws.score = 0 vid connection
 
   // Matchmaking
   if (queuedPlayer) {
