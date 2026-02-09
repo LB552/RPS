@@ -27,14 +27,15 @@ socket.onmessage = (event) => {
   }
 
 if (data.type === "result") {
-  write(`You chose: ${data.p1Choice}`);
-  write(`Opponent chose: ${data.p2Choice}`);
-  write(`Score: You ${data.p1Score} - ${data.p2Score} Opponent`);
+  write(`You chose: ${data.yourChoice}`);
+  write(`Opponent chose: ${data.opponentChoice}`);
+  write(`Score: You ${data.yourScore} - ${data.opponentScore} Opponent`);
 
   if (data.gameOver) {
     write(`🏆 Winner: ${data.winner}`);
   }
 }
+
 
 
     if (data.type === "opponent_left") {
