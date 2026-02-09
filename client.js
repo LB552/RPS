@@ -25,6 +25,7 @@ socket.onmessage = (event) => {
     console.log("Opponent found! Game starting...");
     write("Opponent found! Game starting...");
 
+    document.getElementById("offline").style.display = "none";
     document.getElementById("game").style.display = "block";
   }
 
@@ -34,7 +35,10 @@ if (data.type === "result") {
   write(`Score: You ${data.yourScore} - ${data.opponentScore} Opponent`);
 
   if (data.gameOver) {
-    write(`🏆 Winner: ${data.winner}`);
+    write(`Winner: ${data.winner}`);
+
+    document.getElementById("game").style.display = "none";
+    document.getElementById("disconnect").style.display = "block";
   }
 }
 
@@ -42,5 +46,12 @@ if (data.type === "result") {
 
     if (data.type === "opponent_left") {
     write("Opponent disconnected ");
+
+    document.getElementById("disconnect").style.display = "block";
     }
 };
+
+document.getElementById("resetButton").addEventListener("click", () => {
+  // Reload the page to reset the game
+  window.location.reload();
+});
