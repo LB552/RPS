@@ -16,4 +16,10 @@
 ## What we could do if there is time?
 - It would be nice to singelplayer function, so if the player for some reasons can't find an opponent then the player will play agianst a bot. 
 
-
+## How does it work?
+- As for now, you have to connect with put repo in github.
+- Make a git pull
+- In Vs Codes terminal write the following: node server.js
+- You should get this: WebSocket server running on ws://localhost:8080
+- Then in the project mapp double click on index.html.
+- Wait for an opponent
