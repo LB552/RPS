@@ -24,6 +24,8 @@ socket.onmessage = (event) => {
   if (data.type === "start") {
     console.log("Opponent found! Game starting...");
     write("Opponent found! Game starting...");
+
+    document.getElementById("game").style.display = "block";
   }
 
 if (data.type === "result") {
