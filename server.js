@@ -1,11 +1,21 @@
+const http = require("http");
 const WebSocket = require("ws");
 
-const wss = new WebSocket.Server({ port: 8080 });
-console.log("WebSocket server running on ws://localhost:8080");
+const port = process.env.PORT || 8080;
+
+// Create HTTP server (required for Render)
+const server = http.createServer((req, res) => {
+  res.writeHead(200);
+  res.end("WebSocket server is running");
+});
+
+// Attach WebSocket to HTTP server
+const wss = new WebSocket.Server({ server });
+
+console.log("WebSocket server initializing...");
 
 let queuedPlayer = null;
 
-// Determine the winner of a round
 function determineScore(p1Choice, p2Choice) {
   if (p1Choice === p2Choice) return "draw";
   else if (
@@ -23,7 +33,8 @@ wss.on("connection", (ws) => {
   ws.choice = null;
   ws.opponent = null;
   ws.score = 0;
-//ws.opponent.score krävs ej för självet får alltid ws.score = 0 vid connection
+
+  console.log("Player connected");
 
   // Matchmaking
   if (queuedPlayer) {
@@ -39,14 +50,12 @@ wss.on("connection", (ws) => {
     ws.send(JSON.stringify({ type: "pending" }));
   }
 
-  // Handle incoming messages
   ws.on("message", (message) => {
     const data = JSON.parse(message);
 
     if (data.type === "choice") {
       ws.choice = data.choice;
 
-      // Only proceed if both players have made a choice
       if (ws.choice && ws.opponent && ws.opponent.choice) {
         const result = determineScore(ws.choice, ws.opponent.choice);
 
@@ -64,7 +73,6 @@ wss.on("connection", (ws) => {
           winner = "opponent";
         }
 
-        // Send results to both players
         ws.send(JSON.stringify({
           type: "result",
           yourChoice: ws.choice,
@@ -82,10 +90,14 @@ wss.on("connection", (ws) => {
           yourScore: ws.opponent.score,
           opponentScore: ws.score,
           gameOver,
-          winner: winner === "you" ? "opponent" : winner === "opponent" ? "you" : null
+          winner:
+            winner === "you"
+              ? "opponent"
+              : winner === "opponent"
+              ? "you"
+              : null
         }));
 
-        // Reset choices for next round if game isn't over
         if (!gameOver) {
           ws.choice = null;
           ws.opponent.choice = null;
@@ -94,8 +106,9 @@ wss.on("connection", (ws) => {
     }
   });
 
-  // Handle disconnects
   ws.on("close", () => {
+    console.log("Player disconnected");
+
     if (queuedPlayer === ws) queuedPlayer = null;
 
     if (ws.opponent) {
@@ -104,4 +117,8 @@ wss.on("connection", (ws) => {
       ws.opponent = null;
     }
   });
+});
+
+server.listen(port, () => {
+  console.log(`Server running on port ${port}`);
 });

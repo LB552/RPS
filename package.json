@@ -1,12 +1,12 @@
 {
   "name": "rps",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "Rock Paper Scissors WebSocket Game",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": ""
+  "dependencies": {
+    "ws": "^8.16.0"
+  }
 }
