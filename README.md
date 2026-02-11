@@ -14,7 +14,7 @@
 - With the help of websocket, we will be able to make the connection betweeen two persons.
 
 ## What we could do if there is time?
-- It would be nice to singelplayer function, so if the player for some reasons can't find an opponent then the player will play agianst a bot. 
+
 
 ## How does it work?
 - As for now, you have to connect with put repo in github.
@@ -23,3 +23,11 @@
 - You should get this: WebSocket server running on ws://localhost:8080
 - Then in the project mapp double click on index.html.
 - Wait for an opponent
+
+## How we build the project?
+- We use Javascript, some html but mainly javascript.
+
+## Deployment
+- We struggled a bit with the deployment part. At first we tried to deploy in vercell, the deploying part was no problem. But apparently vercell doesnt support websocket. In which we decided to deploy in render as well.
+- vercell is hosting frontend ( Html, Css, client.js)
+- render is hosting backend (Node, WebSocket server)
