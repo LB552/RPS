@@ -6,11 +6,6 @@ function initWebSocket(server) {
 
   wss.on("connection", (ws) => {
     console.log("Player connected");
-
-    ws.choice = null;
-    ws.score = 0;
-    ws.opponent = null;
-
     handleMatchmaking(ws);
   });
 }

@@ -7,16 +7,20 @@ function determineScore(p1, p2) {
     (p1 === "rock" && p2 === "scissors") ||
     (p1 === "paper" && p2 === "rock") ||
     (p1 === "scissors" && p2 === "paper")
-  ) {
-    return "p1";
-  }
+  ) return "win";
 
-  return "p2";
+  return "lose";
 }
 
 function handleGame(ws) {
   ws.on("message", (message) => {
-    const data = JSON.parse(message);
+    let data;
+    try {
+      data = JSON.parse(message);
+    } catch {
+      return;
+    }
+
     if (data.type !== "choice") return;
 
     ws.choice = data.choice;
@@ -26,50 +30,35 @@ function handleGame(ws) {
 
     const result = determineScore(ws.choice, opponent.choice);
 
-    if (result === "p1") ws.score++;
-    if (result === "p2") opponent.score++;
+    if (result === "win") ws.score++;
+    if (result === "lose") opponent.score++;
 
-    let gameOver = false;
-    let winner = null;
+    const gameOver = ws.score >= 3 || opponent.score >= 3;
 
-    if (ws.score >= 3) {
-      gameOver = true;
-      winner = "you";
-    } else if (opponent.score >= 3) {
-      gameOver = true;
-      winner = "opponent";
-    }
-
-    send(ws, {
-      type: "result",
-      yourChoice: ws.choice,
-      opponentChoice: opponent.choice,
-      yourScore: ws.score,
-      opponentScore: opponent.score,
-      gameOver,
-      winner
-    });
-
-    send(opponent, {
-      type: "result",
-      yourChoice: opponent.choice,
-      opponentChoice: ws.choice,
-      yourScore: opponent.score,
-      opponentScore: ws.score,
-      gameOver,
-      winner:
-        winner === "you"
-          ? "opponent"
-          : winner === "opponent"
-          ? "you"
-          : null
-    });
+    send(ws, buildResult(ws, opponent, gameOver));
+    send(opponent, buildResult(opponent, ws, gameOver));
 
     if (!gameOver) {
       ws.choice = null;
       opponent.choice = null;
     }
   });
+}
+
+function buildResult(player, opponent, gameOver) {
+  return {
+    type: "result",
+    yourChoice: player.choice,
+    opponentChoice: opponent.choice,
+    yourScore: player.score,
+    opponentScore: opponent.score,
+    gameOver,
+    winner: gameOver
+      ? player.score > opponent.score
+        ? "you"
+        : "opponent"
+      : null
+  };
 }
 
 module.exports = { handleGame };

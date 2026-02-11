@@ -4,6 +4,10 @@ const { send } = require("./utils");
 let queuedPlayer = null;
 
 function handleMatchmaking(ws) {
+  ws.choice = null;
+  ws.score = 0;
+  ws.opponent = null;
+
   if (queuedPlayer) {
     ws.opponent = queuedPlayer;
     queuedPlayer.opponent = ws;
