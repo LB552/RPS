@@ -1,5 +1,8 @@
 const socket = new WebSocket("wss://rps-xcg9.onrender.com");
 
+socket.onopen = () => console.log("WebSocket connected!");
+socket.onerror = (err) => console.error("WebSocket error:", err);
+
 // DOM elements
 const output = document.getElementById("output");
 const gameDiv = document.getElementById("game");
