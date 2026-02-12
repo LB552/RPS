@@ -65,9 +65,10 @@ function setStatus(text) {
   statusEl.textContent = text;
 }
 
-function setResult(text) {
-  resultEl.textContent = "Result: " + text;
-}
+setResult(
+  `Opponent chose: ${data.opponentChoice.toUpperCase()} 
+   → Winner: ${data.winner.toUpperCase()}`
+);
 
 function updateScore(your, opponent) {
   scoreEl.textContent = `Score → You: ${your} | Opponent: ${opponent}`;
@@ -77,6 +78,18 @@ function updateScore(your, opponent) {
 
 function play(choice) {
   console.log("Clicked:", choice);
+// highlight choice
+  highlightChoice(choice); 
+
+  if (socket.readyState === WebSocket.OPEN) {
+    socket.send(
+      JSON.stringify({
+        type: "choice",
+        choice: choice,
+      })
+    );
+  }
+}
 
   if (socket.readyState === WebSocket.OPEN) {
     socket.send(
