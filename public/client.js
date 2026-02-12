@@ -1,57 +1,6 @@
 console.log("🔥 CLIENT FILE LOADED 🔥");
 
-/* ==========================
-   WebSocket setup
-========================== */
-
-const socket = new WebSocket(
-  window.location.origin.replace("http", "ws")
-);
-
-socket.onopen = () => {
-  console.log("Connected");
-};
-
-socket.onerror = (err) => {
-  console.error("WebSocket error:", err);
-};
-
-socket.onmessage = (event) => {
-  const data = JSON.parse(event.data);
-  console.log("Received:", data);
-
-  if (data.type === "pending") {
-    statusEl.textContent = "Waiting for opponent...";
-  }
-
-  if (data.type === "start") {
-    statusEl.textContent = "Game started!";
-  }
-
-  if (data.type === "result") {
-    resultEl.textContent =
-      `You chose ${data.yourChoice}, opponent chose ${data.opponentChoice}`;
-  }
-
-  if (data.type === "opponent_left") {
-    statusEl.textContent = "Opponent left the game.";
-  }
-};
-
-
-    setResult(
-      `Opponent chose: ${data.opponentChoice.toUpperCase()} 
-→ Winner: ${data.winner.toUpperCase()}`
-    );
-
-    updateScore(data.yourScore, data.opponentScore);
-    enableChoices();
-  }
-};
-
-/* ==========================
-   DOM Helpers
-========================== */
+  //DOM Helpers
 
 function ensureEl(id, tag = "p") {
   let el = document.getElementById(id);
@@ -67,9 +16,8 @@ const statusEl = ensureEl("status");
 const resultEl = ensureEl("result");
 const scoreEl = ensureEl("score");
 
-/* ==========================
-   UI Update Functions
-========================== */
+
+  //UI Update Functions
 
 function setStatus(text) {
   statusEl.textContent = text;
@@ -79,7 +27,6 @@ function setResult(text) {
   resultEl.textContent = text;
 }
 
-function updateScore(your, opponent) {
 let maxWins = 3;
 
 function updateScore(your, opponent) {
@@ -96,9 +43,7 @@ function updateScore(your, opponent) {
   }
 }
 
-/* ==========================
-   Choice Highlight
-========================== */
+  //Choice Highlight
 
 function highlightChoice(choice) {
   document.querySelectorAll(".choice").forEach(btn => {
@@ -113,9 +58,7 @@ function highlightChoice(choice) {
   }
 }
 
-/* ==========================
-   Enable / Disable Buttons
-========================== */
+  //Enable / Disable Buttons
 
 function disableChoices() {
   document.querySelectorAll(".choice").forEach(btn => {
@@ -129,9 +72,50 @@ function enableChoices() {
   });
 }
 
-/* ==========================
-   Multiplayer Play
-========================== */
+  //WebSocket Setup
+
+const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+const socket = new WebSocket(`${protocol}://${window.location.host}`);
+
+socket.onopen = () => {
+  console.log("✅ Connected to server");
+};
+
+socket.onerror = (err) => {
+  console.error("❌ WebSocket error:", err);
+  setStatus("Connection error");
+};
+
+socket.onmessage = (event) => {
+  const data = JSON.parse(event.data);
+  console.log("📩 Received:", data);
+
+  if (data.type === "pending") {
+    setStatus("Waiting for opponent...");
+  }
+
+  if (data.type === "start") {
+    setStatus("Game started!");
+    enableChoices();
+  }
+
+  if (data.type === "result") {
+    setResult(
+      `Opponent chose: ${data.opponentChoice.toUpperCase()} 
+→ Winner: ${data.winner.toUpperCase()}`
+    );
+
+    updateScore(data.yourScore, data.opponentScore);
+    enableChoices();
+  }
+
+  if (data.type === "opponent_left") {
+    setStatus("Opponent left the game.");
+    disableChoices();
+  }
+};
+
+  //Multiplayer Play
 
 function play(choice) {
   console.log("Clicked:", choice);
@@ -149,16 +133,13 @@ function play(choice) {
   }
 }
 
-/* ==========================
-   CPU Mode
-========================== */
+  //CPU Mode
 
 function playAgainstCPU() {
   setStatus("Playing against CPU...");
   enableChoices();
 
   window.play = (playerChoice) => {
-
     highlightChoice(playerChoice);
 
     const choices = ["rock", "paper", "scissors"];
@@ -166,8 +147,6 @@ function playAgainstCPU() {
       choices[Math.floor(Math.random() * 3)];
 
     disableChoices();
-
-    setStatus(`You chose: ${playerChoice.toUpperCase()}`);
 
     if (playerChoice === cpuChoice) {
       setResult(
@@ -191,9 +170,7 @@ function playAgainstCPU() {
   };
 }
 
-/* ==========================
-   Button Event Listeners
-========================== */
+  //Button Event Listeners
 
 document.querySelectorAll(".choice").forEach((button) => {
   button.addEventListener("click", () => {
@@ -214,9 +191,7 @@ if (resetBtn) {
   });
 }
 
-/* ==========================
-   Default Mode
-========================== */
+  //Default Mode
 
 window.play = play;
 window.playAgainstCPU = playAgainstCPU;
