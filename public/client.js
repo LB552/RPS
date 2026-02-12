@@ -73,7 +73,20 @@ function setResult(text) {
 }
 
 function updateScore(your, opponent) {
+let maxWins = 3;
+
+function updateScore(your, opponent) {
   scoreEl.textContent = `Score → You: ${your} | Opponent: ${opponent}`;
+
+  if (your >= maxWins) {
+    setResult("🔥 YOU WON THE MATCH (Best of 5) 🔥");
+    disableChoices();
+  }
+
+  if (opponent >= maxWins) {
+    setResult("💀 OPPONENT WON THE MATCH (Best of 5) 💀");
+    disableChoices();
+  }
 }
 
 /* ==========================
