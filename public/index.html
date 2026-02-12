@@ -1,23 +1,26 @@
 <!DOCTYPE html>
 <html>
-  <body>
-    <h1>Rock Papers Scissors</h1>
-    <div id="offline" style="display:block;">
-       <p>While waiting, you can play against a CPU</p>
-       <button id="cpuButton">Play against CPU</button>
-    </div>
-      
-    <div id="game" style="display:none;">
-      <button onclick="play('rock')">Rock</button> <button onclick="play('paper')">Paper</button>
-      <button onclick="play('scissors')">Scissors</button>
-    </div>
-    
-    <pre id="output"></pre>
-    <div id="disconnect" style="display:none;">
-      <p>Would you like to reset the game and queue again?</p>
-      <button id="resetButton">Reset</button>
-    </div>
+<body>
+  <h1>Rock Papers Scissors</h1>
 
-    <script src="client.js"></script>
-  </body>
+  <div id="offline" style="display:block;">
+    <p>While waiting, you can play against a CPU</p>
+    <button id="cpuButton">Play against CPU</button>
+  </div>
+
+  <div id="game" style="display:none;">
+    <button onclick="play('rock')">Rock</button>
+    <button onclick="play('paper')">Paper</button>
+    <button onclick="play('scissors')">Scissors</button>
+  </div>
+
+  <pre id="output"></pre>
+
+  <div id="disconnect" style="display:none;">
+    <p>Would you like to reset the game and queue again?</p>
+    <button id="resetButton">Reset</button>
+  </div>
+
+  <script src="client.js"></script>
+</body>
 </html>
