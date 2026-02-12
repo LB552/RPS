@@ -1,8 +1,6 @@
 console.log("🔥 CLIENT FILE LOADED 🔥");
 
-// ==========================
 // WebSocket setup
-// ==========================
 
 const socket = new WebSocket(
   window.location.origin.replace("http", "ws")
@@ -17,26 +15,24 @@ socket.onerror = (err) => {
 };
 
 socket.onmessage = (event) => {
-  const data = JSON.parse(event.data); // ✅ data definieras här
+  const data = JSON.parse(event.data); 
   console.log("Received:", data);
 
-  // --------------------------
+
   // Pending (waiting)
-  // --------------------------
+
   if (data.type === "pending") {
     setStatus("Waiting for opponent...");
   }
 
-  // --------------------------
   // Start game
-  // --------------------------
+  
   if (data.type === "start") {
     setStatus("Game started! Make your move.");
   }
 
-  // --------------------------
   // Result from server
-  // --------------------------
+  
   if (data.type === "result") {
     setStatus(
       `You: ${data.yourChoice} | Opponent: ${data.opponentChoice}`
@@ -47,9 +43,7 @@ socket.onmessage = (event) => {
   }
 };
 
-// ==========================
 // DOM helpers
-// ==========================
 
 function ensureEl(id, tag = "p") {
   let el = document.getElementById(id);
@@ -65,9 +59,7 @@ const statusEl = ensureEl("status");
 const resultEl = ensureEl("result");
 const scoreEl = ensureEl("score");
 
-// ==========================
 // UI update functions
-// ==========================
 
 function setStatus(text) {
   statusEl.textContent = text;
@@ -81,9 +73,7 @@ function updateScore(your, opponent) {
   scoreEl.textContent = `Score → You: ${your} | Opponent: ${opponent}`;
 }
 
-// ==========================
 // Play button logic
-// ==========================
 
 function play(choice) {
   console.log("Clicked:", choice);
@@ -100,9 +90,7 @@ function play(choice) {
   }
 }
 
-// ==========================
 // CPU mode
-// ==========================
 
 function playAgainstCPU() {
   const choices = ["rock", "paper", "scissors"];
@@ -127,9 +115,30 @@ function playAgainstCPU() {
   };
 }
 
-// ==========================
 // Make functions global
-// ==========================
 
 window.play = play;
 window.playAgainstCPU = playAgainstCPU;
+
+// Hook up choice buttons
+
+document.querySelectorAll(".choice").forEach((button) => {
+  button.addEventListener("click", () => {
+    const choice = button.dataset.choice;
+    play(choice);
+  });
+});
+
+// CPU button
+const cpuBtn = document.getElementById("cpuButton");
+if (cpuBtn) {
+  cpuBtn.addEventListener("click", playAgainstCPU);
+}
+
+// Reset button
+const resetBtn = document.getElementById("resetButton");
+if (resetBtn) {
+  resetBtn.addEventListener("click", () => {
+    location.reload();
+  });
+}
