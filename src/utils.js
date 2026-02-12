@@ -1,5 +1,1 @@
-function send(ws, payload) {
-  ws.send(JSON.stringify(payload));
-}
-
-module.exports = { send };
+src/utils.js: function send(ws, payload) { ws.send(JSON.stringify(payload)); } module.exports = { send };
