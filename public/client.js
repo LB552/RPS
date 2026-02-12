@@ -1,69 +1,135 @@
 console.log("🔥 CLIENT FILE LOADED 🔥");
-// Kör först när DOM finns (oavsett var script-taggen ligger)
-window.addEventListener("DOMContentLoaded", () => {
-  // ✅ Skapa status/result om de inte finns i HTML
-  function ensureEl(id, tag = "p") {
-    let el = document.getElementById(id);
-    if (!el) {
-      el = document.createElement(tag);
-      el.id = id;
-      document.body.appendChild(el);
-    }
-    return el;
+
+// ==========================
+// WebSocket setup
+// ==========================
+
+const socket = new WebSocket(
+  window.location.origin.replace("http", "ws")
+);
+
+socket.onopen = () => {
+  console.log("Connected");
+};
+
+socket.onerror = (err) => {
+  console.error("WebSocket error:", err);
+};
+
+socket.onmessage = (event) => {
+  const data = JSON.parse(event.data); // ✅ data definieras här
+  console.log("Received:", data);
+
+  // --------------------------
+  // Pending (waiting)
+  // --------------------------
+  if (data.type === "pending") {
+    setStatus("Waiting for opponent...");
   }
 
-  const statusEl = ensureEl("status");
-  const resultEl = ensureEl("result");
+  // --------------------------
+  // Start game
+  // --------------------------
+  if (data.type === "start") {
+    setStatus("Game started! Make your move.");
+  }
 
-  // making websocket connection.
-  const protocol = window.location.protocol === "https:" ? "wss" : "ws";
-  const socket = new WebSocket(`${protocol}://${window.location.host}`);
+  // --------------------------
+  // Result from server
+  // --------------------------
+  if (data.type === "result") {
+    setStatus(
+      `You: ${data.yourChoice} | Opponent: ${data.opponentChoice}`
+    );
 
-  socket.onopen = () => {
-    console.log("Connected");
-    statusEl.textContent = "Connected";
+    setResult(data.winner);
+    updateScore(data.yourScore, data.opponentScore);
+  }
+};
+
+// ==========================
+// DOM helpers
+// ==========================
+
+function ensureEl(id, tag = "p") {
+  let el = document.getElementById(id);
+  if (!el) {
+    el = document.createElement(tag);
+    el.id = id;
+    document.body.appendChild(el);
+  }
+  return el;
+}
+
+const statusEl = ensureEl("status");
+const resultEl = ensureEl("result");
+const scoreEl = ensureEl("score");
+
+// ==========================
+// UI update functions
+// ==========================
+
+function setStatus(text) {
+  statusEl.textContent = text;
+}
+
+function setResult(text) {
+  resultEl.textContent = "Result: " + text;
+}
+
+function updateScore(your, opponent) {
+  scoreEl.textContent = `Score → You: ${your} | Opponent: ${opponent}`;
+}
+
+// ==========================
+// Play button logic
+// ==========================
+
+function play(choice) {
+  console.log("Clicked:", choice);
+
+  if (socket.readyState === WebSocket.OPEN) {
+    socket.send(
+      JSON.stringify({
+        type: "choice",
+        choice: choice,
+      })
+    );
+  } else {
+    console.log("WebSocket not ready.");
+  }
+}
+
+// ==========================
+// CPU mode
+// ==========================
+
+function playAgainstCPU() {
+  const choices = ["rock", "paper", "scissors"];
+  const cpuChoice = choices[Math.floor(Math.random() * 3)];
+
+  setStatus("Playing against CPU...");
+
+  window.play = (playerChoice) => {
+    setStatus(`You: ${playerChoice} | CPU: ${cpuChoice}`);
+
+    if (playerChoice === cpuChoice) {
+      setResult("Draw");
+    } else if (
+      (playerChoice === "rock" && cpuChoice === "scissors") ||
+      (playerChoice === "paper" && cpuChoice === "rock") ||
+      (playerChoice === "scissors" && cpuChoice === "paper")
+    ) {
+      setResult("You win!");
+    } else {
+      setResult("CPU wins!");
+    }
   };
+}
 
-  // Koppla knappar (om de finns)
-  document.querySelectorAll(".choice").forEach((button) => {
-    button.addEventListener("click", () => {
-      const choice = button.dataset.choice;
-      console.log("Clicked:", choice);
+// ==========================
+// Make functions global
+// ==========================
 
-      socket.send(
-        JSON.stringify({
-          type: "choice",
-          choice,
-        })
-      );
-    });
-  });
-
-  socket.onmessage = (event) => {
-    const data = JSON.parse(event.data);
-    console.log("Received:", data);
-
-    if (data.type === "pending") {
-      statusEl.textContent = "Waiting for opponent...";
-    }
-
-    if (data.type === "start") {
-      statusEl.textContent = "Game started!";
-    }
-
-    if (data.type === "result") {
-      resultEl.textContent = `You chose ${data.yourChoice}, opponent chose ${data.opponentChoice}`;
-    }
-  }
-
-    if (data.type === "opponent_left") {
-    document.getElementById("status").textContent =
-      "Opponent left the game.";
-  }
-
-
-  socket.onerror = (err) => {
-    console.log("❌ WebSocket error", err);
-    statusEl.textContent = "WebSocket error (see console)";
-  };
-});
+window.play = play;
+window.playAgainstCPU = playAgainstCPU;
