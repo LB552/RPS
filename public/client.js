@@ -1,4 +1,4 @@
-const socket = new WebSocket( window.location.origin.replace("http", "ws") );
+const socket = new WebSocket(window.location.origin.replace("http", "ws"));
 
 socket.onopen = () => { console.log("Connected"); };
 
@@ -16,14 +16,27 @@ socket.onmessage = (event) => {
   }
 
   if (data.type === "result") {
-    document.getElementById("output").innerText = `You chose ${data.yourChoice}, opponent chose ${data.opponentChoice}. Your score: ${data.yourScore}, Opponent score: ${data.opponentScore}`;
+    document.getElementById("output").innerText = 
+      `You chose ${data.yourChoice}, opponent chose ${data.opponentChoice}. Your score: ${data.yourScore}, Opponent score: ${data.opponentScore}`;
+    
     if (data.gameOver) {
       alert(`Game over! Winner: ${data.winner}`);
     }
   }
+
+  if (data.type === "opponent_left") {
+    alert("Your opponent disconnected. Returning to queue.");
+    document.getElementById("game").style.display = "none";
+    document.getElementById("offline").style.display = "block";
+  }
 };
 
+// Multiplayer play function
+function play(choice) {
+  socket.send(JSON.stringify({ type: "choice", choice }));
+}
 
+// CPU button fallback (unchanged)
 document.getElementById("cpuButton").addEventListener("click", () => {
   const choices = ["rock", "paper", "scissors"];
   const playerChoice = prompt("Choose rock, paper, or scissors");
@@ -38,5 +51,11 @@ document.getElementById("cpuButton").addEventListener("click", () => {
       ? "win"
       : "lose";
 
-  document.getElementById("output").innerText = `You chose ${playerChoice}, CPU chose ${cpuChoice}. Result: ${result}`;
+  document.getElementById("output").innerText =
+    `You chose ${playerChoice}, CPU chose ${cpuChoice}. Result: ${result}`;
+});
+
+// Optional: reset button for disconnected opponent
+document.getElementById("resetButton")?.addEventListener("click", () => {
+  location.reload();
 });
