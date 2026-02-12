@@ -21,16 +21,23 @@ socket.onmessage = (event) => {
   console.log("Received:", data);
 
   if (data.type === "pending") {
-    setStatus("Waiting for opponent...");
+    statusEl.textContent = "Waiting for opponent...";
   }
 
   if (data.type === "start") {
-    setStatus("Game started! Make your move.");
-    enableChoices();
+    statusEl.textContent = "Game started!";
   }
 
   if (data.type === "result") {
-    setStatus(`You chose: ${data.yourChoice.toUpperCase()}`);
+    resultEl.textContent =
+      `You chose ${data.yourChoice}, opponent chose ${data.opponentChoice}`;
+  }
+
+  if (data.type === "opponent_left") {
+    statusEl.textContent = "Opponent left the game.";
+  }
+};
+
 
     setResult(
       `Opponent chose: ${data.opponentChoice.toUpperCase()} 
