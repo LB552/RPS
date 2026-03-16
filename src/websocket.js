@@ -1,13 +1,11 @@
-const WebSocket = require("ws");
-const { handleMatchmaking } = require("./matchmaking");
+import { WebSocketServer } from "ws";
+import { handleMatchmaking } from "./matchmaking.js";
 
-function initWebSocket(server) {
-  const wss = new WebSocket.Server({ server });
+export function initWebSocket(server) {
+  const wss = new WebSocketServer({ server });
 
   wss.on("connection", (ws) => {
     console.log("Player connected");
     handleMatchmaking(ws);
   });
 }
-
-module.exports = { initWebSocket };

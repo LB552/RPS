@@ -1,6 +1,6 @@
-const express = require("express");
-const http = require("http");
-const { initWebSocket } = require("./src/websocket");
+import express from "express";
+import http from "http";
+import { initWebSocket } from "./src/websocket.js";
 
 const app = express();
 const server = http.createServer(app);

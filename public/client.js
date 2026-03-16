@@ -18,28 +18,24 @@ let cpuMode = false;
 let playerScore = 0;
 let cpuScore = 0;
 
-// Write messages to output (same as old version)
+// Write messages to output
 function write(text) {
   output.textContent += text + "\n";
   output.scrollTop = output.scrollHeight;
 }
 
-// Same logic as old CPU version
+// Determine game result
 function determineScore(p1Choice, p2Choice) {
-  if (p1Choice === p2Choice) {
-    return "draw";
-  } else if (
+  if (p1Choice === p2Choice) return "draw";
+  else if (
     (p1Choice === "rock" && p2Choice === "scissors") ||
     (p1Choice === "paper" && p2Choice === "rock") ||
     (p1Choice === "scissors" && p2Choice === "paper")
-  ) {
-    return "p1";
-  } else {
-    return "p2";
-  }
+  ) return "p1";
+  else return "p2";
 }
 
-// Play button handler (used by HTML buttons)
+// Play button handler
 function play(choice) {
   if (cpuMode) {
     const cpuChoices = ["rock", "paper", "scissors"];
@@ -47,11 +43,8 @@ function play(choice) {
 
     const result = determineScore(choice, cpuChoice);
 
-    if (result === "p1") {
-      playerScore++;
-    } else if (result === "p2") {
-      cpuScore++;
-    }
+    if (result === "p1") playerScore++;
+    else if (result === "p2") cpuScore++;
 
     write(`You chose: ${choice}`);
     write(`CPU chose: ${cpuChoice}`);
@@ -81,17 +74,12 @@ cpuButton.addEventListener("click", () => {
 socket.onmessage = (event) => {
   const data = JSON.parse(event.data);
 
-  if (data.type === "pending") {
-    write("Waiting for opponent...");
-  }
-
+  if (data.type === "pending") write("Waiting for opponent...");
   if (data.type === "start") {
     write("Opponent found! Game starting...");
-
     cpuMode = false;
     playerScore = 0;
     cpuScore = 0;
-
     offlineDiv.style.display = "none";
     gameDiv.style.display = "block";
     disconnectDiv.style.display = "none";
@@ -120,3 +108,5 @@ socket.onmessage = (event) => {
 resetButton.addEventListener("click", () => {
   window.location.reload();
 });
+
+window.play = play;

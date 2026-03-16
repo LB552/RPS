@@ -1,6 +1,6 @@
-const { send } = require("./utils");
+import { send } from "./utils.js";
 
-function determineScore(p1, p2) {
+export function determineScore(p1, p2) {
   if (p1 === p2) return "draw";
   if (
     (p1 === "rock" && p2 === "scissors") ||
@@ -11,7 +11,7 @@ function determineScore(p1, p2) {
   return "lose";
 }
 
-function handleGame(ws) {
+export function handleGame(ws) {
   ws.on("message", (message) => {
     let data;
     try {
@@ -34,21 +34,12 @@ function handleGame(ws) {
 
     const gameOver = ws.score >= 3 || opponent.score >= 3;
 
-    // Capture choices before resetting
     const playerChoice = ws.choice;
     const opponentChoice = opponent.choice;
 
-    // Send results
-    send(
-      ws,
-      buildResult(ws, opponent, playerChoice, opponentChoice, gameOver)
-    );
-    send(
-      opponent,
-      buildResult(opponent, ws, opponent.choice, ws.choice, gameOver)
-    );
+    send(ws, buildResult(ws, opponent, playerChoice, opponentChoice, gameOver));
+    send(opponent, buildResult(opponent, ws, opponent.choice, ws.choice, gameOver));
 
-    // Reset choices for next round
     if (!gameOver) {
       ws.choice = null;
       opponent.choice = null;
@@ -71,5 +62,3 @@ function buildResult(player, opponent, playerChoice, opponentChoice, gameOver) {
       : null,
   };
 }
-
-module.exports = { handleGame };

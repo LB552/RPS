@@ -1,9 +1,9 @@
-const { handleGame } = require("./gamelogic");
-const { send } = require("./utils");
+import { handleGame } from "./gamelogic.js";
+import { send } from "./utils.js";
 
 let queuedPlayer = null;
 
-function handleMatchmaking(ws) {
+export function handleMatchmaking(ws) {
   ws.choice = null;
   ws.score = 0;
   ws.opponent = null;
@@ -33,5 +33,3 @@ function handleMatchmaking(ws) {
     }
   });
 }
-
-module.exports = { handleMatchmaking };
