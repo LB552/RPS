@@ -1,27 +1,37 @@
 const { handleGame } = require("./gamelogic");
 const { send } = require("./utils");
+
 let queuedPlayer = null;
+
 function handleMatchmaking(ws) {
-  ws.choice = null; ws.score = 0;
+  ws.choice = null;
+  ws.score = 0;
   ws.opponent = null;
+
   if (queuedPlayer) {
     ws.opponent = queuedPlayer;
     queuedPlayer.opponent = ws;
+
     send(ws, { type: "start" });
     send(queuedPlayer, { type: "start" });
-    handleGame(ws); handleGame(queuedPlayer);
+
+    handleGame(ws);
+    handleGame(queuedPlayer);
+
     queuedPlayer = null;
-  }
-  else {
+  } else {
     queuedPlayer = ws;
     send(ws, { type: "pending" });
   }
+
   ws.on("close", () => {
     if (queuedPlayer === ws) queuedPlayer = null;
-    if (ws.opponent)
-      { send(ws.opponent, { type: "opponent_left" });
-    ws.opponent.opponent = null;
+
+    if (ws.opponent) {
+      send(ws.opponent, { type: "opponent_left" });
+      ws.opponent.opponent = null;
     }
   });
 }
+
 module.exports = { handleMatchmaking };

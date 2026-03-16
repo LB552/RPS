@@ -1,13 +1,15 @@
 const { send } = require("./utils");
 
-function determineScore(p1, p2)
-  {
-    if (p1 === p2) return "draw";
-    if ( (p1 === "rock" && p2 === "scissors") || (p1 === "paper" && p2 === "rock") || (p1 === "scissors" && p2 === "paper") )
-      return "win";
-      return "lose";
-  }
-
+function determineScore(p1, p2) {
+  if (p1 === p2) return "draw";
+  if (
+    (p1 === "rock" && p2 === "scissors") ||
+    (p1 === "paper" && p2 === "rock") ||
+    (p1 === "scissors" && p2 === "paper")
+  )
+    return "win";
+  return "lose";
+}
 
 function handleGame(ws) {
   ws.on("message", (message) => {
@@ -37,8 +39,14 @@ function handleGame(ws) {
     const opponentChoice = opponent.choice;
 
     // Send results
-    send(ws, buildResult(ws, opponent, playerChoice, opponentChoice, gameOver));
-    send(opponent, buildResult(opponent, ws, opponent.choice, ws.choice, gameOver));
+    send(
+      ws,
+      buildResult(ws, opponent, playerChoice, opponentChoice, gameOver)
+    );
+    send(
+      opponent,
+      buildResult(opponent, ws, opponent.choice, ws.choice, gameOver)
+    );
 
     // Reset choices for next round
     if (!gameOver) {
@@ -56,9 +64,12 @@ function buildResult(player, opponent, playerChoice, opponentChoice, gameOver) {
     yourScore: player.score,
     opponentScore: opponent.score,
     gameOver,
-    winner: gameOver ? (player.score > opponent.score ? "you" : "opponent") : null
+    winner: gameOver
+      ? player.score > opponent.score
+        ? "you"
+        : "opponent"
+      : null,
   };
 }
-
 
 module.exports = { handleGame };

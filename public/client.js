@@ -26,13 +26,17 @@ function write(text) {
 
 // Same logic as old CPU version
 function determineScore(p1Choice, p2Choice) {
-  if (p1Choice === p2Choice) return "draw";
-  else if (
+  if (p1Choice === p2Choice) {
+    return "draw";
+  } else if (
     (p1Choice === "rock" && p2Choice === "scissors") ||
     (p1Choice === "paper" && p2Choice === "rock") ||
     (p1Choice === "scissors" && p2Choice === "paper")
-  ) return "p1";
-  else return "p2";
+  ) {
+    return "p1";
+  } else {
+    return "p2";
+  }
 }
 
 // Play button handler (used by HTML buttons)
@@ -43,8 +47,11 @@ function play(choice) {
 
     const result = determineScore(choice, cpuChoice);
 
-    if (result === "p1") playerScore++;
-    else if (result === "p2") cpuScore++;
+    if (result === "p1") {
+      playerScore++;
+    } else if (result === "p2") {
+      cpuScore++;
+    }
 
     write(`You chose: ${choice}`);
     write(`CPU chose: ${cpuChoice}`);
